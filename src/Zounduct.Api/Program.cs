@@ -30,6 +30,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// Aplicar migraciones automáticamente al arrancar
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ZounductDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseHttpsRedirection();
 app.UseCors("FrontendDev");
 app.MapControllers();
