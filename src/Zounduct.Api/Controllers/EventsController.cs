@@ -29,6 +29,7 @@ public class EventsController : ControllerBase
         return StatusCode(201);
     }
 
+
     [HttpGet("summary")]
     public async Task<IActionResult> GetSummary()
     {
@@ -42,10 +43,19 @@ public class EventsController : ControllerBase
             .GroupBy(e => e.Timestamp.Date.ToString("yyyy-MM-dd"))
             .ToDictionary(g => g.Key, g => g.Count());
 
+        var porTipoPorDia = eventos
+            .GroupBy(e => e.Tipo)
+            .ToDictionary(
+                g => g.Key,
+                g => g.GroupBy(e => e.Timestamp.Date.ToString("yyyy-MM-dd"))
+                      .ToDictionary(dg => dg.Key, dg => dg.Count())
+            );
+
         return Ok(new
         {
             porTipo,
-            porDia
+            porDia,
+            porTipoPorDia
         });
     }
 }
