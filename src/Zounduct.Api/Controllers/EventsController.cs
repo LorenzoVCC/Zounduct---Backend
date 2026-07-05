@@ -58,6 +58,25 @@ public class EventsController : ControllerBase
             porTipoPorDia
         });
     }
+
+    [HttpGet("recent")]
+    public async Task<IActionResult> GetRecent([FromQuery] int limit = 50)
+    {
+        var eventos = await _repo.GetAllAsync();
+
+        var recientes = eventos
+            .OrderByDescending(e => e.Timestamp)
+            .Take(limit)
+            .Select(e => new
+            {
+                e.Tipo,
+                e.Payload,
+                e.Timestamp
+            })
+            .ToList();
+
+        return Ok(recientes);
+    }
 }
 
 public record CreateEventDto(string Tipo, string Payload);
